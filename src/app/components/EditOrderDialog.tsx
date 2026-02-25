@@ -243,7 +243,7 @@ export function EditOrderDialog({ order, open, onClose, onSave }: EditOrderDialo
             <div className="border-t pt-4">
               <div className="flex justify-between items-center">
                 <span className="font-bold text-lg">Total:</span>
-                <span className="text-2xl font-bold text-orange-600">
+                <span className="text-2xl font-bold text-gray-900">
                   ${calculateTotal().toFixed(2)}
                 </span>
               </div>
