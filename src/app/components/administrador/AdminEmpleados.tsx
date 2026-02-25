@@ -42,6 +42,9 @@ export function AdminEmpleados() {
       hireDate: employee.hireDate
     });
     setEditingEmployee(employee);
+    toast.info('Editando empleado', {
+      description: `Puedes modificar ${employee.name}`
+    });
   };
 
   const handleClose = () => {
@@ -89,10 +92,15 @@ export function AdminEmpleados() {
   const handleDelete = (employee: Employee) => {
     if (confirm(`¿Estás seguro de eliminar a ${employee.name}?`)) {
       setEmployees(employees.filter(emp => emp.id !== employee.id));
-      toast.success('Empleado eliminado', {
+      toast.error('Empleado eliminado', {
         description: `${employee.name} ha sido eliminado del sistema`
       });
     }
+  };
+
+  const handleCancel = () => {
+    toast.info('Acción cancelada');
+    handleClose();
   };
 
   const activeEmployees = employees.filter(e => e.status === 'active').length;
@@ -267,7 +275,7 @@ export function AdminEmpleados() {
               <Button type="submit" className="flex-1 bg-[#3E2723] hover:bg-[#5D4037]">
                 {editingEmployee ? 'Guardar Cambios' : 'Crear Empleado'}
               </Button>
-              <Button type="button" variant="outline" onClick={handleClose}>
+              <Button type="button" variant="outline" onClick={handleCancel}>
                 Cancelar
               </Button>
             </div>

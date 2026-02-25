@@ -44,6 +44,9 @@ export function AdminInsumos() {
       supplier: insumo.supplier
     });
     setEditingInsumo(insumo);
+    toast.info('Editando insumo', {
+      description: `Puedes modificar ${insumo.name}`
+    });
   };
 
   const handleClose = () => {
@@ -90,8 +93,15 @@ export function AdminInsumos() {
   const handleDelete = (insumo: Insumo) => {
     if (confirm(`¿Estás seguro de eliminar ${insumo.name}?`)) {
       setInsumos(insumos.filter(ins => ins.id !== insumo.id));
-      toast.success('Insumo eliminado');
+      toast.error('Insumo eliminado', {
+        description: `${insumo.name} fue eliminado del inventario`
+      });
     }
+  };
+
+  const handleCancel = () => {
+    toast.info('Acción cancelada');
+    handleClose();
   };
 
   const getStockStatus = (insumo: Insumo) => {
@@ -319,7 +329,7 @@ export function AdminInsumos() {
               <Button type="submit" className="flex-1">
                 {editingInsumo ? 'Guardar Cambios' : 'Crear Insumo'}
               </Button>
-              <Button type="button" variant="outline" onClick={handleClose}>
+              <Button type="button" variant="outline" onClick={handleCancel}>
                 Cancelar
               </Button>
             </div>

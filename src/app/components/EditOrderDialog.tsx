@@ -20,6 +20,7 @@ import {
 } from './ui/select';
 import { Trash2 } from 'lucide-react';
 import { PRODUCTS } from '../data/products';
+import { toast } from 'sonner';
 
 interface EditOrderDialogProps {
   order: Order | null;
@@ -60,7 +61,13 @@ export function EditOrderDialog({ order, open, onClose, onSave }: EditOrderDialo
   };
 
   const removeItem = (productId: string) => {
+    const itemToRemove = orderItems.find(item => item.productId === productId);
     setOrderItems(orderItems.filter(item => item.productId !== productId));
+    if (itemToRemove) {
+      toast.error('Producto eliminado', {
+        description: `${itemToRemove.productName} removido del pedido`
+      });
+    }
   };
 
   const addProduct = (productId: string) => {
@@ -70,6 +77,9 @@ export function EditOrderDialog({ order, open, onClose, onSave }: EditOrderDialo
     const existingItem = orderItems.find(item => item.productId === productId);
     if (existingItem) {
       updateQuantity(productId, existingItem.quantity + 1);
+      toast.success('Producto agregado', {
+        description: `${product.name} ahora tiene mayor cantidad`
+      });
     } else {
       setOrderItems([...orderItems, {
         productId: product.id,
@@ -77,6 +87,9 @@ export function EditOrderDialog({ order, open, onClose, onSave }: EditOrderDialo
         quantity: 1,
         price: product.price
       }]);
+      toast.success('Producto agregado', {
+        description: `${product.name} agregado al pedido`
+      });
     }
   };
 
@@ -104,6 +117,14 @@ export function EditOrderDialog({ order, open, onClose, onSave }: EditOrderDialo
     };
 
     onSave(updatedOrder);
+    toast.success('Pedido actualizado', {
+      description: `Pedido #${order.id} editado correctamente`
+    });
+    onClose();
+  };
+
+  const handleCancel = () => {
+    toast.info('Edición cancelada');
     onClose();
   };
 
@@ -251,7 +272,7 @@ export function EditOrderDialog({ order, open, onClose, onSave }: EditOrderDialo
           </div>
 
           <DialogFooter className="mt-6">
-            <Button type="button" variant="outline" onClick={onClose}>
+            <Button type="button" variant="outline" onClick={handleCancel}>
               Cancelar
             </Button>
             <Button type="submit">

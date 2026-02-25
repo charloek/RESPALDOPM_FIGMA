@@ -216,6 +216,7 @@ export function EmpleadoSolicitudes({ orders, onAccept, onReject }: EmpleadoSoli
                 onClick={() => {
                   setRejectingOrder(null);
                   setRejectReason('');
+                  toast.info('Acción cancelada');
                 }}
                 variant="outline"
                 className="flex-1"

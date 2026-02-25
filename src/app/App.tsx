@@ -29,7 +29,17 @@ function AppContent() {
 export default function App() {
   return (
     <AuthProvider>
-      <Toaster position="top-right" richColors />
+      <Toaster
+        position="bottom-right"
+        richColors
+        toastOptions={{
+          classNames: {
+            success: '!bg-green-600 !text-white',
+            error: '!bg-red-600 !text-white',
+            info: '!bg-gray-600 !text-white'
+          }
+        }}
+      />
       <AppContent />
     </AuthProvider>
   );

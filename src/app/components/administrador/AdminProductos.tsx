@@ -68,6 +68,9 @@ export function AdminProductos({ products, onCreate, onUpdate, onDelete }: Admin
       image: product.image
     });
     setEditingProduct(product);
+    toast.info('Editando producto', {
+      description: `Puedes modificar ${product.name}`
+    });
   };
 
   const handleClose = () => {
@@ -104,10 +107,15 @@ export function AdminProductos({ products, onCreate, onUpdate, onDelete }: Admin
   const handleDelete = (product: Product) => {
     if (confirm(`¿Estás seguro de eliminar ${product.name}?`)) {
       onDelete(product.id);
-      toast.success('Producto eliminado', {
+      toast.error('Producto eliminado', {
         description: `${product.name} ha sido eliminado del catálogo`
       });
     }
+  };
+
+  const handleCancel = () => {
+    toast.info('Acción cancelada');
+    handleClose();
   };
 
   const getCategoryLabel = (category: string) => {
@@ -278,7 +286,7 @@ export function AdminProductos({ products, onCreate, onUpdate, onDelete }: Admin
               <Button type="submit" className="flex-1 bg-[#3E2723] hover:bg-[#5D4037]">
                 {editingProduct ? 'Guardar Cambios' : 'Crear Producto'}
               </Button>
-              <Button type="button" variant="outline" onClick={handleClose}>
+              <Button type="button" variant="outline" onClick={handleCancel}>
                 Cancelar
               </Button>
             </div>

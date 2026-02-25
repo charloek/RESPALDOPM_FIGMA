@@ -3,6 +3,7 @@ import { Button } from './ui/button';
 import { Card, CardContent } from './ui/card';
 import { Badge } from './ui/badge';
 import { Edit, Trash2, Eye, Calendar, Phone, User } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface OrdersListProps {
   orders: Order[];
@@ -103,7 +104,12 @@ export function OrdersList({ orders, onEdit, onDelete, onViewDetails }: OrdersLi
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => onEdit(order)}
+                    onClick={() => {
+                      toast.info('Editando pedido', {
+                        description: `Pedido #${order.id}`
+                      });
+                      onEdit(order);
+                    }}
                     className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 border-blue-200"
                   >
                     <Edit className="w-4 h-4 mr-1" />
@@ -115,6 +121,9 @@ export function OrdersList({ orders, onEdit, onDelete, onViewDetails }: OrdersLi
                     onClick={() => {
                       if (confirm('¿Está seguro de eliminar este pedido?')) {
                         onDelete(order.id);
+                        toast.error('Pedido eliminado', {
+                          description: `Pedido #${order.id} eliminado`
+                        });
                       }
                     }}
                     className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"

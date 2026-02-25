@@ -6,6 +6,7 @@ import { Label } from '@/app/components/ui/label';
 import { Textarea } from '@/app/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/app/components/ui/card';
 import { ShoppingCart, Trash2, Plus, Minus, Calendar, Clock, MapPin } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface ClienteCarritoProps {
   cart: OrderItem[];
@@ -38,11 +39,27 @@ export function ClienteCarrito({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onCreateOrder(deliveryDate, deliveryTime, address, notes);
+    toast.success('Pedido realizado', {
+      description: 'Tu pedido fue enviado correctamente'
+    });
     // Reset form
     setDeliveryDate('');
     setDeliveryTime('');
     setAddress('');
     setNotes('');
+  };
+
+  const handleRemove = (productId: string) => {
+    const product = getProduct(productId);
+    onRemoveItem(productId);
+    toast.error('Producto eliminado', {
+      description: `${product?.name || 'Producto'} removido del carrito`
+    });
+  };
+
+  const handleClear = () => {
+    onClearCart();
+    toast.error('Carrito vaciado');
   };
 
   const minDate = new Date().toISOString().split('T')[0];
@@ -71,7 +88,7 @@ export function ClienteCarrito({
           <h2 className="text-xl font-semibold text-gray-900">
             Productos en el carrito ({cart.length})
           </h2>
-          <Button variant="outline" size="sm" onClick={onClearCart} className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200">
+          <Button variant="outline" size="sm" onClick={handleClear} className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200">
             Vaciar carrito
           </Button>
         </div>
@@ -121,7 +138,7 @@ export function ClienteCarrito({
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => onRemoveItem(item.productId)}
+                        onClick={() => handleRemove(item.productId)}
                         className="text-red-600 hover:text-red-700 hover:bg-red-50"
                       >
                         <Trash2 className="w-4 h-4 mr-1" />

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Product } from '@/app/types/bakery';
 import { Button } from '@/app/components/ui/button';
 import { Input } from '@/app/components/ui/input';
@@ -11,10 +11,18 @@ interface ClienteCatalogoProps {
   onAddToCart: (product: Product, quantity: number) => void;
 }
 
+interface ToastItem {
+  id: number;
+  message: string;
+  visible: boolean;
+}
+
 export function ClienteCatalogo({ products, onAddToCart }: ClienteCatalogoProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [quantities, setQuantities] = useState<Record<string, number>>({});
+  const [toasts, setToasts] = useState<ToastItem[]>([]);
+  const toastTimeoutRefs = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   const categories = [
     { value: 'all', label: 'Todos' },
@@ -49,9 +57,35 @@ export function ClienteCatalogo({ products, onAddToCart }: ClienteCatalogoProps)
   const handleAddToCart = (product: Product) => {
     const quantity = getQuantity(product.id);
     onAddToCart(product, quantity);
+    const quantityText = quantity > 1 ? `${quantity} unidades` : '1 unidad';
+    const id = Date.now() + Math.floor(Math.random() * 1000);
+    const message = `${quantityText} de ${product.name} agregado al carrito`;
+
+    setToasts(prev => [{ id, message, visible: false }, ...prev].slice(0, 3));
+
+    requestAnimationFrame(() => {
+      setToasts(prev => prev.map(toast => (toast.id === id ? { ...toast, visible: true } : toast)));
+    });
+
+    const hideTimeout = setTimeout(() => {
+      setToasts(prev => prev.map(toast => (toast.id === id ? { ...toast, visible: false } : toast)));
+    }, 3000);
+
+    const removeTimeout = setTimeout(() => {
+      setToasts(prev => prev.filter(toast => toast.id !== id));
+    }, 3300);
+
+    toastTimeoutRefs.current.push(hideTimeout, removeTimeout);
+
     // Reset quantity after adding
     setQuantities(prev => ({ ...prev, [product.id]: 1 }));
   };
+
+  useEffect(() => {
+    return () => {
+      toastTimeoutRefs.current.forEach(timeoutId => clearTimeout(timeoutId));
+    };
+  }, []);
 
   const getCategoryLabel = (category: string) => {
     const cat = categories.find(c => c.value === category);
@@ -70,6 +104,22 @@ export function ClienteCatalogo({ products, onAddToCart }: ClienteCatalogoProps)
 
   return (
     <div className="space-y-6">
+      <div className="fixed bottom-12 right-4 z-40 w-80 pointer-events-none">
+        <div className="relative">
+          {toasts.map((toast, index) => (
+            <div
+              key={toast.id}
+              className={`absolute right-0 w-full transition-all duration-300 ${toast.visible ? 'translate-x-0 opacity-100' : 'translate-x-6 opacity-0'}`}
+              style={{ top: `${index * 70}px` }}
+            >
+              <div className="bg-green-600/85 text-white px-4 py-3 rounded-lg shadow-lg overflow-hidden">
+                <p className="text-sm font-medium leading-snug break-words [overflow-wrap:anywhere]">{toast.message}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* Filtros */}
       <div className="bg-[#F5F1ED] p-4 rounded-lg border shadow-sm space-y-4">
         <div className="relative">
